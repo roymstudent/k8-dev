@@ -1,0 +1,101 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "\\dev\\MyWebAPICore/MyWebAPICore.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "\\dev\\MyWebAPICore/MyWebAPICore.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "\\dev\\MyWebAPICore/MyWebAPICore.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: debug",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "mywebapicore:dev",
+                "target": "build-env",
+                "dockerfile": "\\dev\\MyWebAPICore/Dockerfile",
+                "context": "\\dev\\MyWebAPICore",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "\\dev\\MyWebAPICore/MyWebAPICore.csproj"
+            }
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build: release",
+            "dependsOn": [
+                "build"
+            ],
+            "dockerBuild": {
+                "tag": "mywebapicore:latest",
+                "dockerfile": "\\dev\\MyWebAPICore/Dockerfile",
+                "context": "\\dev\\MyWebAPICore",
+                "pull": true
+            },
+            "netCore": {
+                "appProject": "\\dev\\MyWebAPICore/MyWebAPICore.csproj"
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build: debug"
+            ],
+            "dockerRun": {
+                "os": "Windows"
+            },
+            "netCore": {
+                "appProject": "\\dev\\MyWebAPICore/MyWebAPICore.csproj",
+                "enableDebugging": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: release",
+            "dependsOn": [
+                "docker-build: release"
+            ],
+            "dockerRun": {
+                "os": "Windows"
+            },
+            "netCore": {
+                "appProject": "\\dev\\MyWebAPICore/MyWebAPICore.csproj"
+            }
+        }
+    ]
+}
